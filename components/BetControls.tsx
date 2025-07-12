@@ -86,8 +86,8 @@ export default function BetControls({
         {/* Custom Amount Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setBetAmount(Math.max(25, betAmount - 25))}
-            disabled={betAmount <= 25}
+            onClick={() => setBetAmount(Math.max(0, betAmount - 25))}
+            disabled={betAmount <= 0}
             className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white p-2 rounded-xl transition-colors"
           >
             <Minus className="w-4 h-4" />
@@ -96,16 +96,24 @@ export default function BetControls({
             <input
               type="number"
               value={betAmount}
-              onChange={(e) => setBetAmount(Math.max(25, Math.min(credits, parseInt(e.target.value) || 25)))}
-              className="w-full bg-gray-800 text-yellow-400 text-center font-bold py-2 px-3 rounded-xl border-2 border-yellow-400/30 focus:border-yellow-400 focus:outline-none"
-              min="25"
-              max={credits}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '' || value === '0') {
+                  setBetAmount(0);
+                } else {
+                  const numValue = parseInt(value);
+                  if (!isNaN(numValue) && numValue >= 0) {
+                    setBetAmount(numValue);
+                  }
+                }
+              }}
+              className="w-full bg-gray-800 text-yellow-400 text-center font-bold py-2 px-3 rounded-xl border-2 border-yellow-400/30 focus:border-yellow-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+              placeholder="Enter bet amount"
             />
           </div>
           <button
-            onClick={() => setBetAmount(Math.min(credits, betAmount + 25))}
-            disabled={betAmount >= credits}
-            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white p-2 rounded-xl transition-colors"
+            onClick={() => setBetAmount(betAmount + 25)}
+            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-xl transition-colors"
           >
             <Plus className="w-4 h-4" />
           </button>
